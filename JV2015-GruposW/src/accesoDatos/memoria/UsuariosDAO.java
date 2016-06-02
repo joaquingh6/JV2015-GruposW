@@ -162,7 +162,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 				fin = medio - 1; 
 			}
 		}
-		throw new DatosException("El Usuario no existe...");
+		throw new DatosException("BAJA: El Usuario no existe...");
 	} 
 
 	/**
@@ -197,7 +197,7 @@ public class UsuariosDAO  implements OperacionesDAO {
 			}
 		}
 		if (noExisteUsuario) {
-			throw new DatosException("No existe el Usuario...");
+			throw new DatosException("ACTUALIZAR: No existe el Usuario...");
 		}
 	} 
 

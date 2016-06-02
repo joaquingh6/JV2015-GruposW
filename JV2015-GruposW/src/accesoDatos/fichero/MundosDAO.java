@@ -1,7 +1,17 @@
 package accesoDatos.fichero;
+/** 
+ * Proyecto: Juego de la vida.
+ *  Resuelve todos los aspectos del almacenamiento del
+ *  DTO Mundo utilizando un ArrayList y un Hashtable
+ *  persistentes en ficheros.
+ *  Colabora en el patron Fachada.
+ *  @since: prototipo2.1
+ *  @source: MundosDAO.java 
+ *  @version: 1.1 - 2016/05/23 
+ *  @author: ajp
+ */
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
@@ -10,9 +20,7 @@ import java.util.ArrayList;
 
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.test.DatosPrueba;
 import modelo.Mundo;
-import modelo.SesionUsuario;
 
 public class MundosDAO implements OperacionesDAO, Persistente {
 
@@ -89,12 +97,12 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	//OPERACIONES DAO
 	/**
 	 * Obtiene el objeto dado el id utilizado para el almacenamiento.
-	 * @param id - el mundo de Mundo a obtener.
+	 * @param nombre - el identificador del Mundo a obtener.
 	 * @return - el Mundo encontrado; null si no existe.
 	 */	
 	@Override
-	public Mundo obtener(String nombreMundo) {
-		assert nombreMundo != null;
+	public Mundo obtener(String nombre) {
+		assert nombre != null;
 		int comparacion;
 		int inicio = 0;
 		int fin = datosMundos.size() - 1;
@@ -102,7 +110,7 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;
 			comparacion = datosMundos.get(medio).getNombre()
-					.compareToIgnoreCase(nombreMundo);
+					.compareToIgnoreCase(nombre);
 			if (comparacion == 0) {
 				return datosMundos.get(medio);
 			}
@@ -124,16 +132,6 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 	@Override
 	public Mundo obtener(Object obj)  {
 		return this.obtener(((Mundo) obj).getNombre());
-	}
-
-	/**
-	 * Búsqueda de Mundo.
-	 * @param mundo - el Mundo a buscar.
-	 * @return - el Mundo encontrado o null si no existe.
-	 */
-	public Mundo buscarMundo(Mundo mundo) {
-		assert mundo != null;
-		return this.obtener(mundo.getNombre());				
 	}
 
 	/**
@@ -168,22 +166,60 @@ public class MundosDAO implements OperacionesDAO, Persistente {
 		datosMundos.add(inicio, mundo); 	// Inserta el mundo en orden.		
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param nombre - el nombre del Mundo a eliminar.
+	 * @return - el Mundo eliminado.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-
-		return null;
+	public Mundo baja(String nombre) throws DatosException {
+		Mundo mundo = obtener(nombre);
+		if (mundo != null) {
+			// Elimina el Mundo del almacen de datos.
+			datosMundos.remove(mundo);
+		}	
+		else {
+			throw new DatosException("El Mundo no existe...");
+		}
+		return mundo;
 	}
 
+	/**
+	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
+	 *	@param obj - Mundo con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-
-
+		Mundo mundo = (Mundo) obj;
+		Mundo mundoAux = obtener(mundo.getNombre());
+		if (mundoAux != null) {	
+			mundoAux.setDistribucion(mundo.getDistribucion());
+			mundoAux.setEspacio(mundo.getEspacio());
+			mundoAux.setConstantes(mundo.getConstantes());
+			
+			// Actualización
+			datosMundos.set(datosMundos.indexOf(mundo), mundoAux);
+		}	
+		else {
+			throw new DatosException("El Mundo no existe...");
+		}
 	}
 
+	/**
+	 * Obtiene el listado de todos los objetos Mundo almacenados.
+	 * @return el texto con el volcado de datos.
+	 */
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder listado = new StringBuilder();
+		for (Mundo mundo: datosMundos) {
+			if (mundo != null) {
+				listado.append("\n" + mundo);
+			}
+		}
+		return listado.toString();
 	}
 
 } // class

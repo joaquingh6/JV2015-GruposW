@@ -15,8 +15,6 @@ import java.util.List;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
 import modelo.SesionUsuario;
-import modelo.Simulacion;
-import modelo.Usuario;
 
 public class SesionesDAO implements OperacionesDAO {
 
@@ -166,60 +164,59 @@ public class SesionesDAO implements OperacionesDAO {
 		sesionesUsuario.add(inicio, sesion); 	// Inserta la sesion en orden.
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param idSesion - identifcador de la SesionUsuario a eliminar.
+	 * @return - el SesionUsuario eliminada.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-
-		return null;
+	public SesionUsuario baja(String idSesion) throws DatosException {
+		SesionUsuario sesion = obtener(idSesion);
+		if (sesion != null) {
+			// Elimina la sesion del almacen de datos.
+			sesionesUsuario.remove(sesion);
+		}	
+		else {
+			throw new DatosException("BAJA: La Sesion no existe...");
+		}
+		return sesion;
 	}
-
+	
+	/**
+	 *  Actualiza datos de una SesionUsuario reemplazando el almacenado por el recibido.
+	 *	@param obj - SesionUsuario con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-
-	} 
-
+		SesionUsuario sesion = (SesionUsuario) obj;
+		SesionUsuario sesionAux = obtener(sesion);
+		if (sesionAux != null) {	
+			sesionAux.setUsr(sesion.getUsr());
+			sesionAux.setFecha(sesion.getFecha());
+			//sesionAux.(sesion.getEstado());
+			// Actualización
+			sesionesUsuario.set(sesionesUsuario.indexOf(sesion), sesionAux);
+		}	
+		else {
+			throw new DatosException("ACTUALIZAR: La Sesion no existe...");
+		}
+	}
+	
 	/**
 	 * Obtiene el listado de todos las sesiones almacenadas.
 	 * @return el texto con el volcado de datos.
 	 */
 	@Override
 	public String listarDatos() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder listado = new StringBuilder();
 		for (SesionUsuario s: sesionesUsuario) {
 			if (s != null) {
-				sb.append("\n" + s);
+				listado.append("\n" + s);
 			}
 		}
-		return sb.toString();
-	}
-
-	/**
-	 * Serializa en una cadena de caracteres los datos de todos los usuarios almacenados.
-	 * @return el texto
-	 */
-	public String datosSesionesTexto() {
-		StringBuilder aux = new StringBuilder();
-		for (SesionUsuario s: sesionesUsuario) {
-			if (s != null) {
-				aux.append(s.toString() + ';');
-			}
-		}
-		return aux.toString();
-	}
-
-	/**
-	 * Búsqueda simple de todas las sesiones por IdUsr de usuario.
-	 * @param id - el idUsr a buscar.
-	 * @return - las sesiones encontradas o null si no existe.
-	 */
-	public ArrayList<SesionUsuario> buscarTodasSesiones(String id) {
-		ArrayList<SesionUsuario> aux = new ArrayList<SesionUsuario>() ;
-		for (int i = 0, j = 0; i < sesionesUsuario.size(); i++) {
-			if (id.equals(sesionesUsuario.get(i).getUsr().getIdUsr())) {
-				aux.add(sesionesUsuario.get(i));
-				j++;
-			}
-		}
-		return aux;
+		return listado.toString();
 	}
 
 }//class

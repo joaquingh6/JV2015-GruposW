@@ -113,22 +113,58 @@ public class PatronesDAO implements OperacionesDAO {
 		}
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param nombre - el nombre del Patron a eliminar.
+	 * @return - el Patron eliminado.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-		// TODO Auto-generated method stub
-		return null;
+	public Patron baja(String nombre) throws DatosException {
+		Patron patron = obtener(nombre);
+		if (patron != null) {
+			// Elimina el Mundo del almacen de datos.
+			datosPatrones.remove(patron);
+		}	
+		else {
+			throw new DatosException("BAJA: El Patron no existe...");
+		}
+		return patron;
 	}
-
+	
+	/**
+	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
+	 *	@param obj - Patron con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-		// TODO Auto-generated method stub
-		
+		Patron patron = (Patron) obj;
+		Patron patronAux = obtener(patron.getNombre());
+		if (patronAux != null) {	
+			patronAux.setEsquema(patron.getEsquema());	
+			// Actualización
+			datosPatrones.set(datosPatrones.indexOf(patron), patronAux);
+		}	
+		else {
+			throw new DatosException("ACTUALIZAR: El Patron no existe...");
+		}
 	}
 
+	/**
+	 * Obtiene el listado de todos los objetos Patron almacenados.
+	 * @return el texto con el volcado de datos.
+	 */
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
-	} 
+		StringBuilder listado = new StringBuilder();
+		for (Patron patron: datosPatrones) {
+			if (patron != null) {
+				listado.append("\n" + patron); 
+			}
+		}
+		return listado.toString();
+	}
 	
 } //class
+

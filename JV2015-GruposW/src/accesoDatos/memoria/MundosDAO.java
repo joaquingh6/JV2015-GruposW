@@ -115,22 +115,60 @@ public class MundosDAO implements OperacionesDAO {
 		datosMundos.add(inicio, mundo); 	// Inserta el mundo en orden.		
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param nombre - el nombre del Mundo a eliminar.
+	 * @return - el Mundo eliminado.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-	
-		return null;
+	public Mundo baja(String nombre) throws DatosException {
+		Mundo mundo = obtener(nombre);
+		if (mundo != null) {
+			// Elimina el Mundo del almacen de datos.
+			datosMundos.remove(mundo);
+		}	
+		else {
+			throw new DatosException("El Mundo no existe...");
+		}
+		return mundo;
 	}
 
+	/**
+	 *  Actualiza datos de un Mundo reemplazando el almacenado por el recibido.
+	 *	@param obj - Mundo con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-
-		
+		Mundo mundo = (Mundo) obj;
+		Mundo mundoAux = obtener(mundo.getNombre());
+		if (mundoAux != null) {	
+			mundoAux.setDistribucion(mundo.getDistribucion());
+			mundoAux.setEspacio(mundo.getEspacio());
+			mundoAux.setConstantes(mundo.getConstantes());
+			
+			// Actualización
+			datosMundos.set(datosMundos.indexOf(mundo), mundoAux);
+		}	
+		else {
+			throw new DatosException("El Mundo no existe...");
+		}
 	}
 
+	/**
+	 * Obtiene el listado de todos los objetos Mundo almacenados.
+	 * @return el texto con el volcado de datos.
+	 */
 	@Override
 	public String listarDatos() {
-		// TODO Auto-generated method stub
-		return null;
+		StringBuilder listado = new StringBuilder();
+		for (Mundo mundo: datosMundos) {
+			if (mundo != null) {
+				listado.append("\n" + mundo);
+			}
+		}
+		return listado.toString();
 	}
 
 } // class

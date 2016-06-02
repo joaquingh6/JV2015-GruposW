@@ -1,30 +1,27 @@
+package accesoDatos.fichero;
 /** 
  * Proyecto: Juego de la vida.
  *  Resuelve todos los aspectos del almacenamiento del
- *  DTO SesionesUsuario utilizando un ArrayList persistente en fichero.
+ *  DTO SesionUsuario utilizando un ArrayList persistente en fichero.
  *  Colabora en el patron Fachada.
- *  @since: prototipo2.2
+ *  @since: prototipo2.1
  *  @source: SesionesDAO.java 
- *  @version: 2.2 - 18/05/2015 
+ *  @version: 1.1 - 2016/05/23
  *  @author: ajp
  */
 
-package accesoDatos.fichero;
-
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
+import java.util.List;
 
-import modelo.SesionUsuario;
-import modelo.Usuario;
 import accesoDatos.DatosException;
 import accesoDatos.OperacionesDAO;
-import accesoDatos.test.DatosPrueba;
+import modelo.SesionUsuario;
 
 public class SesionesDAO implements OperacionesDAO, Persistente {
 
@@ -33,6 +30,8 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 
 	// Elemento de almacenamiento. 
 	private ArrayList<SesionUsuario> sesionesUsuario;
+
+	// Fichero de datos.
 	private File fSesiones;
 
 	/**
@@ -95,9 +94,7 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 			oosSesiones.flush();
 			oosSesiones.close();
 		} 
-		catch (IOException e) {
-			e.printStackTrace();
-		}
+		catch (IOException e) {}
 	}
 
 	//OPERACIONES DAO
@@ -143,18 +140,16 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 	 * @param idUsr - el identificador de usuario a buscar.
 	 * @return - Sublista con las sesiones encontrada; null si no existe ninguna.
 	 */
-	public ArrayList<SesionUsuario> obtenerTodas(String idUsr)  {
+	public List<SesionUsuario> obtenerTodas(String idUsr)  {
 		int inicio = 0;
 		int fin = sesionesUsuario.size() - 1;
-		int medio;
-		boolean existeUsr = false;	
+		int medio;	
 		int comparacion;					// auxiliar para la comparación de String
 		while (inicio <= fin) {
 			medio = (inicio + fin) / 2;
 			comparacion = sesionesUsuario.get(medio).getUsr().getIdUsr().compareToIgnoreCase(idUsr);
 			if (comparacion == 0) {
-				existeUsr = true;
-				break;
+				return separarSesiones(medio);
 			}
 			if (comparacion < 0) { 
 				inicio = medio + 1;
@@ -163,21 +158,30 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 				fin = medio - 1;
 			}
 		}
-		if (existeUsr) {
-			// Localiza primera sesion del usuario
-			int primera = 0;
-			for (int i = inicio; sesionesUsuario.get(i).getUsr().getIdUsr().equals(idUsr); i++) {
-				primera = i;
-			}
-			// Localiza primera sesion del usuario
-			int ultima = 0;
-			for (int i = inicio; sesionesUsuario.get(i).getUsr().getIdUsr().equals(idUsr); i--) {
-				ultima = i;
-			}
-			// devuelve la sublista de sesiones buscada.
-			return (ArrayList<SesionUsuario>) sesionesUsuario.subList(primera, ultima);
-		}
 		return null;	
+	}
+
+	/**
+	 * Separa en una lista independiente de todas las sesiones de un mismo usuario.
+	 * @param medio - el indice de una sesion almacenada.
+	 * @return - Sublista con las sesiones encontrada; null si no existe ninguna.
+	 */
+	private List<SesionUsuario> separarSesiones(int medio) {
+		int primera = medio;
+		String idUsr = sesionesUsuario.get(medio).getUsr().getIdUsr();
+		// Localiza primera sesion del usuario.
+		for (int i = medio+1; i > sesionesUsuario.size()
+				&& sesionesUsuario.get(i).getUsr().getIdUsr().equals(idUsr); i++) {
+			primera = i;
+		}
+		// Localiza ultima sesion del usuario.
+		int ultima = medio;
+		for (int i = medio-1; i < 0
+				&& sesionesUsuario.get(i).getUsr().getIdUsr().equals(idUsr); i--) {
+			ultima = i;
+		}
+		// devuelve la sublista de sesiones buscadas.
+		return sesionesUsuario.subList(primera, ultima+1);
 	}
 
 	/**
@@ -199,7 +203,7 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 			// compara los dos id. Obtiene < 0 si id va después que medio.
 			comparacion = sesionesUsuario.get(medio).getIdSesion().compareToIgnoreCase(sesion.getIdSesion());
 			if (comparacion == 0) {			
-				throw new DatosException("La SesionUsuario ya existe...");   				  
+				throw new DatosException("ALTA: La SesionUsuario ya existe...");   				  
 			}		
 			if (comparacion < 0) {
 				inicio = medio + 1;
@@ -211,60 +215,59 @@ public class SesionesDAO implements OperacionesDAO, Persistente {
 		sesionesUsuario.add(inicio, sesion); 	// Inserta la sesion en orden.
 	}
 
+	/**
+	 * Elimina el objeto, dado el id utilizado para el almacenamiento.
+	 * @param idSesion - identifcador de la SesionUsuario a eliminar.
+	 * @return - el SesionUsuario eliminada.
+	 * @throws DatosException - si no existe.
+	 */
 	@Override
-	public Object baja(String id) throws DatosException {
-
-		return null;
+	public SesionUsuario baja(String idSesion) throws DatosException {
+		SesionUsuario sesion = obtener(idSesion);
+		if (sesion != null) {
+			// Elimina la sesion del almacen de datos.
+			sesionesUsuario.remove(sesion);
+		}	
+		else {
+			throw new DatosException("BAJA: La Sesion no existe...");
+		}
+		return sesion;
 	}
-
+	
+	/**
+	 *  Actualiza datos de una SesionUsuario reemplazando el almacenado por el recibido.
+	 *	@param obj - SesionUsuario con las modificaciones.
+	 *  @throws DatosException - si no existe.
+	 */
 	@Override
 	public void actualizar(Object obj) throws DatosException {
-
-	} 
-
+		SesionUsuario sesion = (SesionUsuario) obj;
+		SesionUsuario sesionAux = obtener(sesion);
+		if (sesionAux != null) {	
+			sesionAux.setUsr(sesion.getUsr());
+			sesionAux.setFecha(sesion.getFecha());
+			//sesionAux.(sesion.getEstado());
+			// Actualización
+			sesionesUsuario.set(sesionesUsuario.indexOf(sesion), sesionAux);
+		}	
+		else {
+			throw new DatosException("ACTUALIZAR: La Sesion no existe...");
+		}
+	}
+	
 	/**
 	 * Obtiene el listado de todos las sesiones almacenadas.
 	 * @return el texto con el volcado de datos.
 	 */
 	@Override
 	public String listarDatos() {
-		StringBuilder sb = new StringBuilder();
+		StringBuilder listado = new StringBuilder();
 		for (SesionUsuario s: sesionesUsuario) {
 			if (s != null) {
-				sb.append("\n" + s);
+				listado.append("\n" + s);
 			}
 		}
-		return sb.toString();
-	}
-
-	/**
-	 * Serializa en una cadena de caracteres los datos de todos los usuarios almacenados.
-	 * @return el texto
-	 */
-	public String datosSesionesTexto() {
-		StringBuilder aux = new StringBuilder();
-		for (SesionUsuario s: sesionesUsuario) {
-			if (s != null) {
-				aux.append(s.toString() + ';');
-			}
-		}
-		return aux.toString();
-	}
-
-	/**
-	 * Búsqueda simple de todas las sesiones por IdUsr de usuario.
-	 * @param id - el idUsr a buscar.
-	 * @return - las sesiones encontradas o null si no existe.
-	 */
-	public ArrayList<SesionUsuario> buscarTodasSesiones(String id) {
-		ArrayList<SesionUsuario> aux = new ArrayList<SesionUsuario>() ;
-		for (int i = 0, j = 0; i < sesionesUsuario.size(); i++) {
-			if (id.equals(sesionesUsuario.get(i).getUsr().getIdUsr())) {
-				aux.add(sesionesUsuario.get(i));
-				j++;
-			}
-		}
-		return aux;
+		return listado.toString();
 	}
 
 }//class
