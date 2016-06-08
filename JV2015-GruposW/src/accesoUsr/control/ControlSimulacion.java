@@ -31,7 +31,7 @@ public class ControlSimulacion {
 	public void arrancarSimulacion() {
 		int gen = 0; 		//Generaciones
 		do {
-			System.out.println("\nGeneración: " + gen);
+			vista.mostrar("\nGeneración: " + gen);
 			vista.mostrarMundo(this);
 			mundo = (Mundo) mundo.actualizarEstado();
 			gen++;

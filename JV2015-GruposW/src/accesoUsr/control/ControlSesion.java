@@ -3,8 +3,10 @@ package accesoUsr.control;
 import accesoDatos.DatosException;
 import accesoDatos.GestionDatos;
 import accesoUsr.vista.VistaSesionTexto;
+import config.Configuracion;
 import modelo.Contraseña;
 import modelo.SesionUsuario;
+import modelo.SesionUsuario.EstadoSesion;
 import modelo.Usuario;
 import util.Fecha;
 
@@ -21,7 +23,7 @@ public class ControlSesion {
 	public ControlSesion(String idUsr) {
 		initControlSesion(idUsr);
 	}
-	
+
 	private void initControlSesion(String idUsr) {
 		datos = GestionDatos.getInstancia();
 		vista = new VistaSesionTexto();
@@ -36,8 +38,7 @@ public class ControlSesion {
 	 * @param credencialUsr ya obtenida, puede ser null.
 	 */
 	private void iniciarSesionUsuario(String idUsr) {
-		boolean todoCorrecto = false;				// Control de credenciales de usuario.
-		int intentos = 3;							// Contandor de intentos.
+		int intentos = new Integer(Configuracion.get().getProperty("sesion.intentosFallidos"));							// Contandor de intentos.
 		String credencialUsr = idUsr;
 		do {
 			if (idUsr == null) {
@@ -58,34 +59,37 @@ public class ControlSesion {
 			usrSesion = datos.obtenerUsuario(credencialUsr);
 			if ( usrSesion != null) {			
 				if (usrSesion.getClaveAcceso().equals(new Contraseña(clave))) {
-					todoCorrecto = true;
+					registrarSesion();
+					break;
 				}
-			}
-			if (todoCorrecto == false) {
 				intentos--;
 				vista.mostrar("Credenciales incorrectas...");
 				vista.mostrar("Quedan " + intentos + " intentos... ");
 			}
 		}
-		while (!todoCorrecto && intentos > 0);
+		while (intentos > 0);
 
-		if (todoCorrecto) {
-			// Registra sesión.
-			// Crea la sesión de usuario en el sistema.
-			sesion = new SesionUsuario(usrSesion, new Fecha());
-			try {
-				datos.altaSesion(sesion);
-			} catch (DatosException e) {
-				e.printStackTrace();
-			}	
-			vista.mostrar("Sesión: " + sesion.getIdSesion()
-			+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
-			+ usrSesion.getApellidos());
-		}
-		else {	
+		if (intentos <= 0){
 			vista.mostrar("Fin de programa...");
 			System.exit(0);	
 		}
+	}
+
+	/**
+	 * Crea la sesion de usuario 
+	 */
+	private void registrarSesion() {
+		// Registra sesión.
+		// Crea la sesión de usuario en el sistema.
+		sesion = new SesionUsuario(usrSesion, new Fecha(), EstadoSesion.ACTIVA);
+		try {
+			datos.altaSesion(sesion);
+		} catch (DatosException e) {
+			e.printStackTrace();
+		}	
+		vista.mostrar("Sesión: " + sesion.getIdSesion()
+		+ '\n' + "Iniciada por: " + usrSesion.getNombre() + " "
+		+ usrSesion.getApellidos());	
 	}
 
 } //class

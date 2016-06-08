@@ -55,4 +55,9 @@ public interface OperacionesDAO {
 	 */
 	String listarDatos();
 	
+	/**
+	 *  Cierra datos.
+	 */
+	void cerrar();
+	
 } // interface

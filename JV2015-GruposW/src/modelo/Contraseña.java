@@ -2,6 +2,7 @@ package modelo;
 
 import java.io.Serializable;
 
+import config.Configuracion;
 import util.Formato;
 
 public class Contraseña implements Serializable {
@@ -13,7 +14,7 @@ public class Contraseña implements Serializable {
 	}
 
 	public Contraseña() {
-		this("Contraseña#1");
+		this(Configuracion.get().getProperty("usuario.passwordPredeterminada"));
 	}
 
 	public Contraseña(Contraseña contraseña) {

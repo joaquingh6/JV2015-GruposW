@@ -28,7 +28,6 @@ public class GestionDatos {
 	/**
 	 * Constructor por defecto de uso interno.
 	 * Sólo se ejecutará una vez.
-	 * @throws DatosException 
 	 */
 	private GestionDatos() {
 		usuariosDAO = UsuariosDAO.getInstancia();
@@ -56,11 +55,18 @@ public class GestionDatos {
 	 *  Cierra almacenes de datos.
 	 */
 	public void cerrar() {
+		guardarDatos();
+	}
+
+	/**
+	 *  actualiza ficheros de datos.
+	 */
+	private void guardarDatos() {
 		usuariosDAO.guardarDatos();
 		sesionesDAO.guardarDatos();
 		patronesDAO.guardarDatos();
 		mundosDAO.guardarDatos();
-		simulacionesDAO.guardarDatos();
+		simulacionesDAO.guardarDatos();	
 	}
 
 	// FACHADA usuariosDAO
@@ -129,7 +135,6 @@ public class GestionDatos {
 	 * de un id equivalente. 
 	 * Reenvia petición al método DAO específico.
 	 * @param id - equivalente.
-	 * @throws DatosException - si ya existe.
 	 */
 	public String getEquivalenciaId(String id) {
 		return usuariosDAO.obtenerEquivalencia(id);
@@ -224,7 +229,7 @@ public class GestionDatos {
 	 * @return - lista de simulaciones encontradas; null si no existe.
 	 */	
 	public List<Simulacion> obtenerSimulacionesUsuario(String idUsr) {
-		return simulacionesDAO.obtenerSimulacionesUsuario(idUsr);
+		return simulacionesDAO.obtenerTodasMismoUsr(idUsr);
 	}
 	
 	/**

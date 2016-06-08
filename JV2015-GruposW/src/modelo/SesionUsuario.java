@@ -1,9 +1,5 @@
 package modelo;
 
-import java.io.Serializable;
-
-import util.Fecha;
-
 /** 
  * Proyecto: Juego de la vida.
  *  Implementa el concepto de SesionUsuario según el modelo1
@@ -14,30 +10,35 @@ import util.Fecha;
  *  @version: 2.0 - 11/04/2016 
  *  @author: ajp
  */
+import java.io.Serializable;
+
+import util.Fecha;
 
 public class SesionUsuario implements Serializable {
 	
+	public enum EstadoSesion { EN_PREPARACION, ACTIVA, CERRADA }
+
 	// Atributos	
-	private Usuario usr;   // Concreta la relación de composición del modelo UML
+	private Usuario usr;  
 	private Fecha fecha; 
-	
-	// Constructores
+	private EstadoSesion estado;
 	
 	/**
 	 * @param usr
 	 * @param fecha
 	 */
-	public SesionUsuario(Usuario usr, Fecha fecha) {
+	public SesionUsuario(Usuario usr, Fecha fecha, EstadoSesion estado) {
 		setUsr(usr);
 		setFecha(fecha);
+		setEstado(estado);
 	}
 	
 	public SesionUsuario(){
-		this(new Usuario(), new Fecha());
+		this(new Usuario(), new Fecha(), EstadoSesion.EN_PREPARACION);
 	}
 
 	public SesionUsuario(SesionUsuario su){
-		this(new Usuario(su.usr), new Fecha(su.fecha));
+		this(su.usr, new Fecha(su.fecha), su.estado);
 	}
 	
 	
@@ -51,6 +52,9 @@ public class SesionUsuario implements Serializable {
 		return fecha;
 	}
 
+	public EstadoSesion getEstado() {
+		return estado;
+	}
 	/**
 	 * Obtiene idSesion concatenando idUsr + un número como texto con el formato:
 	 * año+mes+dia+hora+minuto+segundo de la fecha de sesión.
@@ -70,7 +74,7 @@ public class SesionUsuario implements Serializable {
 		assert fechaSesionValida(fecha);
 		this.fecha = fecha;
 	}
-
+	
 	/**
 	 * Comprueba validez de una fecha.
 	 * @param fecha.
@@ -95,7 +99,12 @@ public class SesionUsuario implements Serializable {
 		return true;
 	}
 	
-	// Métodos redefinidos
+	/**
+	 * @param estado the estado to set
+	 */
+	public void setEstado(EstadoSesion estado) {
+		this.estado = estado;
+	}
 	
 	/**
 	 * Redefine el método heredado de la clase Objecto.
@@ -104,8 +113,8 @@ public class SesionUsuario implements Serializable {
 	 */
 	@Override
 	public String toString() {
-		return  "\n" + usr
-				+ String.format("\n fecha: \t\t%s", fecha);
+		return String.format("SesionUsuario \n[usr=%s, \nfecha=%s, \nestado=%s]",
+				usr, fecha, estado);
 	}
 
 } // class

@@ -21,7 +21,7 @@ public class Direccion implements Serializable {
 	}
 
 	public Direccion() {
-		this("30000", "Via", "10", "Murcia", "España");
+		this("30000", "Via", "0", "Murcia", "España");
 	}
 	
 	public Direccion(Direccion direccion) {

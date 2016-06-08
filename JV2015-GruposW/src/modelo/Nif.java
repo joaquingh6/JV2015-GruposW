@@ -23,7 +23,7 @@ public class Nif implements Serializable {
 	 * Constructor por defecto.
 	 */
 	public Nif() {
-		this("00000000A");
+		this("00000000I");
 	}
 
 	/**
