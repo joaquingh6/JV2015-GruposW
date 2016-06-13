@@ -1,10 +1,3 @@
-package modelo;
-
-import java.io.Serializable;
-
-import util.Fecha;
-import util.Formato;
-
 /** Proyecto: Juego de la vida.
  *  Implementa el concepto de Persona según el modelo2.  
  *  @since: prototipo2.0
@@ -12,6 +5,12 @@ import util.Formato;
  *  @version: 1.0 - 14/03/2016 
  *  @author: ajp
  */
+package modelo;
+
+import java.io.Serializable;
+
+import util.Fecha;
+import util.Formato;
 
 public class  Persona implements Serializable {
 
