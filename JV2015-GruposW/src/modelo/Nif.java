@@ -1,5 +1,11 @@
 package modelo;
-
+/** Proyecto: Juego de la vida.
+ *  Implementa el concepto de Nif según el modelo2.  
+ *  @since: prototipo2.0
+ *  @source: Nif.java 
+ *  @version: 1.0 - 14/03/2016 
+ *  @author: ajp
+ */
 import java.io.Serializable;
 
 import util.Formato;

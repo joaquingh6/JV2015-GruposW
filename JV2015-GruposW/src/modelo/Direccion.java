@@ -1,4 +1,11 @@
 package modelo;
+/** Proyecto: Juego de la vida.
+ *  Implementa el concepto de Direccion según el modelo2.  
+ *  @since: prototipo2.0
+ *  @source: Direccion.java 
+ *  @version: 1.0 - 14/03/2016 
+ *  @author: ajp
+ */
 
 import java.io.Serializable;
 
@@ -13,22 +20,32 @@ public class Direccion implements Serializable {
 	
 	public Direccion(String codigoPostal, String via, String numero, 
 						String poblacion, String pais) {
+		set(codigoPostal, via, numero, poblacion, pais);
+	}
+
+	public Direccion() {
+		set("30000", "Via", "0", "Murcia", "España");
+	}
+	
+	public Direccion(Direccion direccion) {
+		set(direccion.codigoPostal, direccion.via, direccion.numero, 
+				direccion.poblacion, direccion.pais);
+	}
+	
+	public Direccion(String direccion) {
+		String[] campos = direccion.split(",");
+		set(campos[0], campos[1], campos[2], campos[3], campos[4]);
+	}
+
+	private void set(String codigoPostal, String via, String numero, 
+						String poblacion, String pais) {
 		setCodigoPostal(codigoPostal);
 		setVia(via);
 		setNumero(numero);
 		setPoblacion(poblacion);
-		setPais(pais);
+		setPais(pais);	
 	}
 
-	public Direccion() {
-		this("30000", "Via", "0", "Murcia", "España");
-	}
-	
-	public Direccion(Direccion direccion) {
-		this(direccion.codigoPostal, direccion.via, direccion.numero, 
-				direccion.poblacion, direccion.pais);
-	}
-	
 	public void setCodigoPostal(String codigoPostal) {
 		assert esValidoCodigoPostal(codigoPostal);
 		this.codigoPostal = codigoPostal;
@@ -204,8 +221,8 @@ public class Direccion implements Serializable {
 
 	@Override
 	public String toString() {
-		return codigoPostal + ", " + via + ", " + numero
-				+ ", " + poblacion + ", " + pais;
+		return codigoPostal + "," + via + "," + numero
+				+ "," + poblacion + "," + pais;
 	}
 	
 } // class
