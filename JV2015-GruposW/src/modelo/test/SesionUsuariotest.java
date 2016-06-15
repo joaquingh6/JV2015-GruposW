@@ -9,7 +9,7 @@ import util.Fecha;
 	/** 
 	 * Proyecto: Juego de la vida. 
 	 *  Joaquin Garcia
-	 *  prueba 2
+	 *  prueba 3
 	 */
 
 	public class SesionUsuariotest implements Serializable {
